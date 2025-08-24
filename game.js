@@ -3,19 +3,25 @@ const c = canvas.getContext('2d');
 
 const keys = {};
 
-const wheelThickness = 20;
-const wheelDiameter = 60;
-let wheelX = canvas.width / 2;
-let wheelY = canvas.height / 2;
-let direction = 0;
+const wheelThickness = 10;
+const wheelDiameter = 30;
+
+const frontRearDistance = 50;
+let frontWheelDirection = 0;
+let frontWheelX = canvas.width / 2;
+let frontWheelY = canvas.height / 2;
+let rearWheelDirection = 1;
+let rearWheelX = frontWheelX - frontRearDistance;
+let rearWheelY = frontWheelY;
+
 let speed = 0;
 
 function makeAFrame(timestamp) {
   if (keys.ArrowLeft === true) {
-    direction -= 0.01;
+    frontWheelDirection -= 0.03;
   }
   if (keys.ArrowRight === true) {
-    direction += 0.01;
+    frontWheelDirection += 0.03;
   }
   if (keys.ArrowUp === true) {
     speed += 0.05;
@@ -24,10 +30,15 @@ function makeAFrame(timestamp) {
     speed -= 0.05;
   }
 
-  // wheelX += Math.sin(direction) * speed;
-  // wheelY += -Math.cos(direction) * speed;
-  wheelX += Math.cos(direction) * speed;
-  wheelY += Math.sin(direction) * speed;
+  frontWheelX += Math.cos(frontWheelDirection) * speed;
+  frontWheelY += Math.sin(frontWheelDirection) * speed;
+
+  const frontToRearX = rearWheelX - frontWheelX;
+  const frontToRearY = rearWheelY - frontWheelY;
+  const frontToRearDirection = Math.atan2(frontToRearY, frontToRearX);
+  rearWheelX = frontWheelX + Math.cos(frontToRearDirection) * frontRearDistance;
+  rearWheelY = frontWheelY + Math.sin(frontToRearDirection) * frontRearDistance;
+  rearWheelDirection = Math.atan2(-frontToRearY, -frontToRearX);
 
   if (speed > 0) {
     // speed -= 0.01;
@@ -41,15 +52,35 @@ function makeAFrame(timestamp) {
 
   c.clearRect(0, 0, canvas.width, canvas.height);
 
+
   c.save();
 
-  c.translate(wheelX, wheelY);
-  c.rotate(direction);
-  c.fillStyle = 'blue';
-  // c.fillRect(-(wheelThickness / 2), -(wheelDiameter / 2), wheelThickness, wheelDiameter);
+  c.translate(frontWheelX, frontWheelY);
+  c.rotate(frontWheelDirection);
+
+  c.fillStyle = '#333333';
   c.fillRect(-(wheelDiameter / 2), -(wheelThickness / 2), wheelDiameter, wheelThickness);
 
   c.restore();
+
+
+  c.save();
+
+  c.translate(rearWheelX, rearWheelY);
+  c.rotate(rearWheelDirection);
+
+  c.fillStyle = '#333333';
+  c.fillRect(-(wheelDiameter / 2), -(wheelThickness / 2), wheelDiameter, wheelThickness);
+
+  c.restore();
+  
+
+  // c.strokeStyle = 'blue';
+  // c.beginPath();
+  // c.moveTo(frontWheelX, frontWheelY);
+  // c.lineTo(rearWheelX, rearWheelY);
+  // c.stroke();
+  // //@ c.endPath()?
 
   requestAnimationFrame(makeAFrame);
 }
@@ -57,12 +88,10 @@ function makeAFrame(timestamp) {
 requestAnimationFrame(makeAFrame);
 
 document.addEventListener('keydown', (event) => {
-  console.log(`key (${event.code}) down`);
   keys[event.code] = true;
 });
 
 document.addEventListener('keyup', (event) => {
-  console.log(`key (${event.code}) up`);
   keys[event.code] = false;
 });
 

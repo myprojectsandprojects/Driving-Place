@@ -1,7 +1,10 @@
 h1 {
   color: red;
+  text-align: center;
 }
 
 #game-canvas {
   border: solid 1px green;
+  display: block;
+  margin: 0 auto 0 auto;
 }
