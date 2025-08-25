@@ -53,6 +53,48 @@ function makeAFrame(timestamp) {
   c.clearRect(0, 0, canvas.width, canvas.height);
 
 
+  c.strokeStyle = '#204FCF';
+  c.lineWidth = 3;
+  c.fillStyle = '#20CFA0';
+  c.beginPath();
+  c.moveTo(10, 10);
+  c.lineTo(50, 50);
+  c.lineTo(90, 50);
+  // c.lineTo(10, 50);
+  // c.closePath();
+  c.stroke();
+  c.fill();
+
+  const centerPointX = 100;
+  const centerPointY = 100;
+  const radius = 30;
+  const numPoints = 9;
+
+  const angleChange = 2 * Math.PI / numPoints;
+  const points = [];
+  for (let angle = 0; angle < 2 * Math.PI; angle += angleChange) {
+    const pointX = centerPointX + Math.cos(angle) * radius;
+    const pointY = centerPointY + Math.sin(angle) * radius;
+    points.push({x: pointX, y: pointY});
+  }
+
+  c.lineWidth = 1;
+  c.strokeStyle = '#000000';
+  c.beginPath();
+  c.moveTo(points[0].x, points[0].y);
+  for (let i = 1; i < points.length; i += 1) {
+    c.lineTo(points[i].x, points[i].y);
+  }
+  c.closePath();
+  c.stroke();
+
+  c.fillStyle = '#ff0000';
+  for (let i = 0; i < points.length; i += 1) {
+    c.beginPath();
+    c.arc(points[i].x, points[i].y, 3, 0, 2 * Math.PI);
+    c.fill();
+  }
+
   c.save();
 
   c.translate(frontWheelX, frontWheelY);
@@ -80,7 +122,6 @@ function makeAFrame(timestamp) {
   // c.moveTo(frontWheelX, frontWheelY);
   // c.lineTo(rearWheelX, rearWheelY);
   // c.stroke();
-  // //@ c.endPath()?
 
   requestAnimationFrame(makeAFrame);
 }
