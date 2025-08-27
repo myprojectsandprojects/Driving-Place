@@ -16,6 +16,10 @@ let rearWheelY = frontWheelY;
 
 let speed = 0;
 
+let cameraX = 0;
+let cameraY = 0;
+let cameraDirection = 0;
+
 function makeAFrame(timestamp) {
   if (keys.ArrowLeft === true) {
     frontWheelDirection -= 0.03;
@@ -30,6 +34,20 @@ function makeAFrame(timestamp) {
     speed -= 0.05;
   }
 
+  // console.log(Object.keys(keys));
+  if (keys.KeyA === true) {
+    cameraX -= 10;
+  }
+  if (keys.KeyD === true) {
+    cameraX += 10;
+  }
+  if (keys.KeyW === true) {
+    cameraY -= 10;
+  }
+  if (keys.KeyS === true) {
+    cameraY += 10;
+  }
+
   frontWheelX += Math.cos(frontWheelDirection) * speed;
   frontWheelY += Math.sin(frontWheelDirection) * speed;
 
@@ -39,6 +57,15 @@ function makeAFrame(timestamp) {
   rearWheelX = frontWheelX + Math.cos(frontToRearDirection) * frontRearDistance;
   rearWheelY = frontWheelY + Math.sin(frontToRearDirection) * frontRearDistance;
   rearWheelDirection = Math.atan2(-frontToRearY, -frontToRearX);
+
+  // cameraX = frontWheelX - canvas.width / 2;
+  // cameraY = frontWheelY - canvas.height / 2;
+  // cameraX = frontWheelX;
+  // cameraY = frontWheelY;
+  // cameraDirection = frontWheelDirection;
+  cameraX = rearWheelX;
+  cameraY = rearWheelY;
+  cameraDirection = rearWheelDirection;
 
   if (speed > 0) {
     // speed -= 0.01;
@@ -50,24 +77,24 @@ function makeAFrame(timestamp) {
     speed -= Math.max(-0.01, speed)
   }
 
+
   c.clearRect(0, 0, canvas.width, canvas.height);
 
+  // c.strokeStyle = '#204FCF';
+  // c.lineWidth = 3;
+  // c.fillStyle = '#20CFA0';
+  // c.beginPath();
+  // c.moveTo(10, 10);
+  // c.lineTo(50, 50);
+  // c.lineTo(90, 50);
+  // // c.lineTo(10, 50);
+  // // c.closePath();
+  // c.stroke();
+  // c.fill();
 
-  c.strokeStyle = '#204FCF';
-  c.lineWidth = 3;
-  c.fillStyle = '#20CFA0';
-  c.beginPath();
-  c.moveTo(10, 10);
-  c.lineTo(50, 50);
-  c.lineTo(90, 50);
-  // c.lineTo(10, 50);
-  // c.closePath();
-  c.stroke();
-  c.fill();
-
-  const centerPointX = 100;
-  const centerPointY = 100;
-  const radius = 30;
+  const centerPointX = 0;
+  const centerPointY = 0;
+  const radius = 600;
   const numPoints = 9;
 
   const angleChange = 2 * Math.PI / numPoints;
@@ -78,6 +105,11 @@ function makeAFrame(timestamp) {
     points.push({x: pointX, y: pointY});
   }
 
+  c.save();
+  c.translate(canvas.width / 2, canvas.height / 2);
+  c.rotate(-cameraDirection);
+  c.translate(-cameraX, -cameraY);
+  
   c.lineWidth = 1;
   c.strokeStyle = '#000000';
   c.beginPath();
@@ -95,8 +127,14 @@ function makeAFrame(timestamp) {
     c.fill();
   }
 
+  c.restore();
+
+
   c.save();
 
+  c.translate(canvas.width / 2, canvas.height / 2);
+  c.rotate(-cameraDirection);
+  c.translate(-cameraX, -cameraY);
   c.translate(frontWheelX, frontWheelY);
   c.rotate(frontWheelDirection);
 
@@ -108,6 +146,9 @@ function makeAFrame(timestamp) {
 
   c.save();
 
+  c.translate(canvas.width / 2, canvas.height / 2);
+  c.rotate(-cameraDirection);
+  c.translate(-cameraX, -cameraY);
   c.translate(rearWheelX, rearWheelY);
   c.rotate(rearWheelDirection);
 
